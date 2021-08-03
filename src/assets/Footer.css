@@ -1,0 +1,100 @@
+footer{
+    width: 100%;
+    height: auto;
+    color: #fff;
+    background-color: #000;
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+}
+.footer{
+    max-width: 1364px;
+    margin: 60px auto 0;
+    padding: 70px 0 20px;
+    height: 100%;
+}
+.list-footer{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #eee;
+}
+.list-item{
+    width: 25%;
+}
+.socials{
+    display: flex;
+    align-items: center;
+    margin-top: 50px;
+}
+.social__item{
+    background-color: #fff;
+    width: 36px;
+    height: 36px;
+    margin-right: 14px;
+    border-radius: 50%;
+}
+.social__item span{
+    display: inline-flex;
+    width: 100%;
+    position: relative;
+}
+.social__item span svg{
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.about-us{
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+.about-us__left{
+    color: #ea8025;
+    font-size:16px;
+    font-weight: bold;
+    width: 34%;
+}
+.about-us__right{
+    width: 50%;
+    font-size: 10px;
+    font-weight: bold;
+}
+.about-us__link{
+    display: block;
+    color: #fff;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.app-download, .support{
+    color: #ea8025;
+    font-size:16px;
+    font-weight: bold;
+}
+.app-download__img{
+    display: block;
+    margin-top: 20px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+}
+.delivery-phone{
+    margin-top: 20px;
+}
+.delivery-phone,.hont-line,.adrress-support{
+    font-size: 16px;
+}
+
+.footer-bottom{
+    max-width: 1364px;
+    margin: 0px auto 0;
+    padding-bottom: 30px;
+}
+.footer-bottom *{
+    color: #333;
+    font-size: 16px;
+}
