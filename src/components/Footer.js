@@ -1,10 +1,10 @@
 import React from "react";
-import logofooter from "../image/logo_footer.png";
-import gov from "../image/gov.png";
 import appstore from "../image/appstore.png";
 import ggplay from "../image/google-play-badge.png";
-import react from "react";
-function Footer() {
+import gov from "../image/gov.png";
+import logofooter from "../image/logo_footer.png";
+
+export default function Footer() {
   return (
     <footer>
       <div className="footer">
@@ -111,5 +111,3 @@ function Footer() {
     </footer>
   );
 }
-
-export default react.memo(Footer);

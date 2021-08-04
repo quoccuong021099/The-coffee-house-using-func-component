@@ -23,7 +23,6 @@
 }
 .btn {
   display: inline-block;
-  background-color: #fff;
   border: 1px solid #e5e5e5;
   outline: none;
   font-size: 12.25px;
@@ -141,7 +140,8 @@ input:focus {
   position: relative;
   cursor: pointer;
 }
-.cart-icon:hover svg circle,.cart-icon:hover svg polyline{
+.cart-icon:hover svg circle,
+.cart-icon:hover svg polyline {
   stroke: #39f !important;
 }
 .cart-icon span {
@@ -169,7 +169,8 @@ input:focus {
   box-shadow: 0px 0px 10px -4px rgba(0, 0, 0, 0.5);
 }
 
-.ship-now,.time-order {
+.ship-now,
+.time-order {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -178,7 +179,7 @@ input:focus {
   cursor: pointer;
 }
 
-.time-order{
+.time-order {
   justify-content: flex-start;
   cursor: pointer;
   border-bottom: 1px solid #ea8025;
@@ -188,33 +189,36 @@ input:focus {
   justify-content: space-between;
   align-items: center;
 }
-.ship-now__left h3, .time-order h3 {
+.ship-now__left h3,
+.time-order h3 {
   margin-left: 10px;
   font-size: 14px;
   font-weight: 300;
   color: #999;
 }
-.ship-now__left h3:hover{
+.ship-now__left h3:hover {
   color: #222;
 }
-.ship-now__left:hover svg circle,.ship-now__left:hover svg path,.ship-now__left:hover svg rect{
+.ship-now__left:hover svg circle,
+.ship-now__left:hover svg path,
+.ship-now__left:hover svg rect {
   stroke: #222;
 }
-.time-order__description{
+.time-order__description {
   padding: 10px;
 }
-.select-group span{
+.select-group span {
   font-size: 16px;
   line-height: 32px;
 }
-.select-group select{
-  width: 100%; 
+.select-group select {
+  width: 100%;
   height: 40px;
   padding: 0 10px;
   border: 1px solid #e5e5e5;
   outline: none;
 }
-.timer{
+.timer {
   margin-top: 10px;
   width: 100%;
   color: #fff;
@@ -222,7 +226,7 @@ input:focus {
   outline: none;
   border: none;
 }
-.timer:hover{
+.timer:hover {
   border: none;
   background-color: #d46707;
 }

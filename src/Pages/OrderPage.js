@@ -1,102 +1,56 @@
-import React from "react";
-import "../assets/Header.css";
-import "../assets/Body.css";
-import "../assets/PlaceholderSidebar.css";
-import "../assets/PlaceholderProduct.css";
-import "../assets/ProductContainer.css";
+import React, { useEffect, useState } from "react";
+import { Route, Switch } from "react-router-dom";
 import "../assets/add-to-cart.css";
+import "../assets/Body.css";
 import "../assets/CartContainer.css";
 import "../assets/Footer.css";
-import Header from "../components/Header";
+import "../assets/Header.css";
+import "../assets/PlaceholderProduct.css";
+import "../assets/PlaceholderSidebar.css";
+import "../assets/ProductContainer.css";
 import Body from "../components/Body/Body";
 import Footer from "../components/Footer";
+import Header from "../components/header";
 import LoginAndRegister from "./LoginAndRegister";
-import { Switch, Route } from "react-router-dom";
 
-class OrderPage extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      deliveryChargeFlag: false,
-      cartNumber: 0,
-    };
-  }
-  changeDeliveryChargeFlag = () => {
-    this.setState({
-      deliveryChargeFlag: true,
-    });
+export default function OrderPage() {
+  const [deliveryChargeFlag, setDeliveryChargeFlag] = useState(false);
+  const [cartNumber, setCartNumber] = useState(0);
+
+  const changeDeliveryChargeFlag = () => {
+    setDeliveryChargeFlag(true);
   };
-  getAmount = (number) => {
+  const getAmount = (number) => {
     let amount = 0;
     if (number.length > 0) {
       number.map((item) => (amount += item.amount));
     }
-    this.setState({
-      cartNumber: amount,
-    });
+    setCartNumber(amount);
   };
 
-  render() {
-    return (
-      <div className="OrderPage">
-        <Header
-          changeDeliveryChargeFlag={this.changeDeliveryChargeFlag}
-          cartNumber={this.state.cartNumber}
-          handleLogin={this.handleLogin}
-          flagLogin={this.state.flagLogin}
+  return (
+    <div className="OrderPage">
+      <Header
+        changeDeliveryChargeFlag={changeDeliveryChargeFlag}
+        cartNumber={cartNumber}
+      />
+      <Switch>
+        <Route path="/LoginAndRegister" component={LoginAndRegister} />
+        <Route
+          exact
+          path="/"
+          render={(props) => (
+            <Body
+              {...props}
+              getAmount={getAmount}
+              changeDeliveryChargeFlag={changeDeliveryChargeFlag}
+              deliveryChargeFlag={deliveryChargeFlag}
+            />
+          )}
         />
-        <Switch>
-          <Route path="/LoginAndRegister" component={LoginAndRegister} />
-          <Route
-            exact
-            path="/"
-            render={(props) => (
-              <Body
-                {...props}
-                getAmount={this.getAmount}
-                changeDeliveryChargeFlag={this.changeDeliveryChargeFlag}
-                deliveryChargeFlag={this.state.deliveryChargeFlag}
-              />
-            )}
-          />
-        </Switch>
+      </Switch>
 
-        <Footer />
-      </div>
-    );
-  }
+      <Footer />
+    </div>
+  );
 }
-
-export default OrderPage;
-
-// import React from 'react'
-
-// export default function OrderPage() {
-//   return (
-//     <div className="OrderPage">
-//         <Header
-//           changeDeliveryChargeFlag={this.changeDeliveryChargeFlag}
-//           cartNumber={this.state.cartNumber}
-//           handleLogin={this.handleLogin}
-//           flagLogin={this.state.flagLogin}
-//         />
-//         <Switch>
-//           <Route path="/LoginAndRegister" component={LoginAndRegister} />
-//           <Route
-//             exact
-//             path="/"
-//             render={(props) => (
-//               <Body
-//                 {...props}
-//                 getAmount={this.getAmount}
-//                 changeDeliveryChargeFlag={this.changeDeliveryChargeFlag}
-//                 deliveryChargeFlag={this.state.deliveryChargeFlag}
-//               />
-//             )}
-//           />
-//         </Switch>
-
-//         <Footer />
-//       </div>
-//   )
-// }

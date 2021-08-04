@@ -1,5 +1,4 @@
-/* eslint-disable react/no-direct-mutation-state */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import Main from "../Product/Main";
 import CartContainer from "./CartContainer";
@@ -9,34 +8,27 @@ import Image from "../../common/Image";
 import failData from "../../image/search.png";
 import SearchProduct from "../Product/SearchProduct";
 import AddToCart from "../AddToCard/AddToCart";
-class Body extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      isLoaded: true,
-      categories: [],
-      searchProduct: "",
-      active: null,
-      addProductFlag: false,
-      productInfo: null,
-      productInfoForCart: [],
-      indexProductOrder: -1,
-    };
-  }
 
-  addToCart = (data) => {
-    let { productInfoForCart } = this.state;
+export default function Body(props) {
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [searchProduct, setSearchProduct] = useState("");
+  const [active, setActive] = useState(null);
+  const [addProductFlag, setAddProductFlag] = useState(false);
+  const [productInfo, setProductInfo] = useState(null);
+  const [productInfoForCart, setProductInfoForCart] = useState([]);
+  const [indexProductOrder, setIndexProductOrder] = useState([-1]);
 
+  /////////////////////
+  const addToCart = (data) => {
     let copyProductInfoForCart = [...productInfoForCart];
 
-    if (this.state.indexProductOrder !== -1) {
+    if (indexProductOrder !== -1) {
       copyProductInfoForCart = copyProductInfoForCart.filter(
-        (item, index) => index !== this.state.indexProductOrder
+        (item, index) => index !== indexProductOrder
       );
-      this.setState({
-        productInfoForCart: copyProductInfoForCart,
-      });
+      setProductInfoForCart(copyProductInfoForCart);
     }
     let flag = 1;
     copyProductInfoForCart.map((item) =>
@@ -50,6 +42,12 @@ class Body extends React.Component {
     );
 
     if (flag === 1) {
+      props.getAmount([...copyProductInfoForCart, data]);
+
+      setProductInfoForCart(
+        [...copyProductInfoForCart, data].filter((item) => item.amount > 0)
+      );
+
       // setItem LocalStorage
       localStorage.setItem(
         "productInfoForCart",
@@ -57,31 +55,20 @@ class Body extends React.Component {
           [...copyProductInfoForCart, data].filter((item) => item.amount > 0)
         )
       );
-
-      this.setState({
-        productInfoForCart: [...copyProductInfoForCart, data].filter(
-          (item) => item.amount > 0
-        ),
-      });
-
-      this.props.getAmount([...copyProductInfoForCart, data]);
     } else {
       // setItem LocalStorage
       localStorage.setItem(
         "productInfoForCart",
         JSON.stringify(copyProductInfoForCart)
       );
+      props.getAmount([...copyProductInfoForCart]);
     }
-
-    this.setState({
-      optionBoxClose: false,
-      indexProductOrder: -1,
-      productInfo: null,
-    });
+    setIndexProductOrder(-1);
+    setProductInfo(null);
   };
-
   /////////////////////
-  addProduct = (data) => {
+
+  const addProduct = (data) => {
     let products = {
       product_name: data.product_name,
       image: data.image,
@@ -89,39 +76,31 @@ class Body extends React.Component {
       variants: data.variants,
       price: data.price,
     };
-    this.setState({
-      addProductFlag: true,
-      productInfo: products,
-      indexProductOrder: -1,
-    });
+    setAddProductFlag(true);
+    setProductInfo(products);
+    setIndexProductOrder(-1);
   };
   /////////////////////
 
-  editProduct = (data, index) => {
-    this.setState({
-      addProductFlag: true,
-      productInfo: data,
-      indexProductOrder: index,
-    });
+  const editProduct = (data, index) => {
+    setAddProductFlag(true);
+    setProductInfo(data);
+    setIndexProductOrder(index);
   };
   /////////////////////
 
-  closeModal = () => {
-    this.setState({
-      addProductFlag: false,
-    });
+  const closeModal = () => {
+    setAddProductFlag(false);
     setTimeout(() => {
-      this.setState({
-        productInfo: null,
-      });
+      setProductInfo(null);
     }, 300);
   };
   /////////////////////
 
-  onchange = (e) => this.setState({ searchProduct: e.target.value });
-  /////////////////////
+  const onchange = (e) => setSearchProduct(e.target.value);
 
-  merge = (categoryList, products) => {
+  /////////////////////
+  const merge = (categoryList, products) => {
     categoryList.map((category) => {
       let newData = [];
       products.map((product) => {
@@ -135,16 +114,16 @@ class Body extends React.Component {
     });
     return categoryList;
   };
+
   /////////////////////
 
-  activeCategory = (id) => {
-    this.setState({
-      active: id,
-    });
+  const activeCategory = (id) => {
+    setActive(id);
   };
 
   /////////////////////
-  componentDidMount() {
+
+  useEffect(() => {
     fetch("https://api.thecoffeehouse.com/api/v2/menu")
       .then((res) => res.json())
       .then((products) => {
@@ -153,114 +132,86 @@ class Body extends React.Component {
             .then((res) => res.json())
             .then((categoryList) => {
               if (products.status_code !== 500) {
-                let newData = this.merge(categoryList, products.data);
-                this.setState({
-                  categories: newData,
-                  isLoaded: false,
-                  active: newData[0].id,
-                });
+                let newData = merge(categoryList, products.data);
+                setCategories(newData);
+                setIsLoaded(false);
+                setActive(newData[0].id);
               }
             })
             .catch((error) => {
-              this.setState({
-                isLoaded: true,
-                error,
-              });
+              setIsLoaded(true);
+              setError(error);
             });
         }
       })
       .catch((error) => {
-        this.setState({
-          isLoaded: true,
-          error,
-        });
+        setIsLoaded(true);
+        setError(error);
       });
 
     if (
       JSON.parse(localStorage.getItem("productInfoForCart")) &&
       JSON.parse(localStorage.getItem("productInfoForCart")).length > 0
     ) {
-      this.setState({
-        productInfoForCart: JSON.parse(
-          localStorage.getItem("productInfoForCart")
-        ),
-      });
-      this.props.getAmount(
+      setProductInfoForCart(
         JSON.parse(localStorage.getItem("productInfoForCart"))
       );
+      props.getAmount(JSON.parse(localStorage.getItem("productInfoForCart")));
     }
-  }
-  /////////////////////
-
-  render() {
-    const {
-      isLoaded,
-      categories,
-      error,
-      searchProduct,
-      active,
-      productInfo,
-      productInfoForCart,
-    } = this.state;
-    const { onUpdateCartNumber, deliveryCharge, changeDeliveryCharge } =
-      this.props;
-    if (error) {
-      return (
-        <div className="failData">
-          <Image src={failData} width="300" height="300" alt="no data" />
-          <br /> Đường truyền dữ liệu có vấn đề. <br /> Vui lòng thử lại sau!
-        </div>
-      );
-    } else {
-      return (
-        <section className="main">
-          {isLoaded ? (
-            <PlaceholderSidebar />
-          ) : (
-            <Sidebar
-              categories={categories}
-              active={active}
-              activeCategory={this.activeCategory}
-            />
-          )}
-          <div className="products">
-            {isLoaded ? (
-              <PlaceholderProduct />
-            ) : (
-              <div>
-                <SearchProduct onChange={this.onchange} />
-                <div className="all__product">
-                  <Main
-                    products={categories}
-                    searchProduct={searchProduct}
-                    active={active}
-                    activeCategory={this.activeCategory}
-                    onUpdateCartNumber={onUpdateCartNumber}
-                    changeDeliveryCharge={changeDeliveryCharge}
-                    addProduct={this.addProduct}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-          <CartContainer
-            deliveryCharge={deliveryCharge}
-            productInfoForCart={productInfoForCart}
-            editProduct={this.editProduct}
-            deliveryChargeFlag={this.props.deliveryChargeFlag}
+  }, []);
+  if (error) {
+    return (
+      <div className="failData">
+        <Image src={failData} width="300" height="300" alt="no data" />
+        <br /> Đường truyền dữ liệu có vấn đề. <br /> Vui lòng thử lại sau!
+      </div>
+    );
+  } else
+    return (
+      <section className="main">
+        {isLoaded ? (
+          <PlaceholderSidebar />
+        ) : (
+          <Sidebar
+            categories={categories}
+            active={active}
+            activeCategory={activeCategory}
           />
-          {productInfo !== null && (
-            <AddToCart
-              closeModal={this.closeModal}
-              productInfo={productInfo}
-              addToCart={this.addToCart}
-              changeDeliveryChargeFlag={this.props.changeDeliveryChargeFlag}
-            />
+        )}
+        <div className="products">
+          {isLoaded ? (
+            <PlaceholderProduct />
+          ) : (
+            <div>
+              <SearchProduct onChange={onchange} />
+              <div className="all__product">
+                <Main
+                  products={categories}
+                  searchProduct={searchProduct}
+                  active={active}
+                  activeCategory={activeCategory}
+                  onUpdateCartNumber={props.onUpdateCartNumber}
+                  changeDeliveryCharge={props.changeDeliveryCharge}
+                  addProduct={addProduct}
+                />
+              </div>
+            </div>
           )}
-        </section>
-      );
-    }
-  }
+        </div>
+        <CartContainer
+          deliveryCharge={props.deliveryCharge}
+          productInfoForCart={productInfoForCart}
+          editProduct={editProduct}
+          deliveryChargeFlag={props.deliveryChargeFlag}
+        />
+        {productInfo !== null && (
+          <AddToCart
+            closeModal={closeModal}
+            productInfo={productInfo}
+            addToCart={addToCart}
+            changeDeliveryChargeFlag={props.changeDeliveryChargeFlag}
+          />
+        )}
+      </section>
+    );
 }
-
-export default Body;

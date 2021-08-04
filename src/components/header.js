@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import DropdownItem from "./Delivery/DropdownItem";
@@ -9,37 +9,28 @@ import CartIcon from "../common/CartIcon";
 import DropdownDelivery from "./Delivery/DropdownDelivery";
 import { Link } from "react-router-dom";
 
-class Logo extends React.Component {
-  render() {
-    return <img src={logo} alt="logo" />;
-  }
-}
+// export function Logo  ({ logo }) return <img src={logo} alt="logo" />;
 
-class Header extends React.Component {
-  constructor(props) {
-    super(props);
-    this.container = React.createRef();
-    this.state = {
-      location: "",
-      getAddress: [],
-      dropdown: false,
-      delivery: false,
-      valueTime: "TRONG 15-30 PHÚT",
-      valueDate: null,
-      valueTimerOnButton: "",
-      timerFlag: false,
-      optionValueTime: [],
-      optionValueTimeNotNow: [],
-      notNow: false,
-      today: null,
-      tommorow: null,
-      nextTwoDays: null,
-      hours: null,
-      minutes: null,
-    };
-  }
+export default function Header(props) {
+  const container = useRef();
+  const [location, setLocation] = useState("");
+  const [getAddress, setGetAddress] = useState([]);
+  const [dropdown, setDropdown] = useState(false);
+  const [delivery, setDelivery] = useState(false);
+  const [valueTime, setValueTime] = useState("TRONG 15-30 PHÚT");
+  const [valueDate, setValueDate] = useState(null);
+  const [valueTimerOnButton, setValueTimerOnButton] = useState("");
+  const [timerFlag, setTimerFlag] = useState(false);
+  const [optionValueTime, setOptionValueTime] = useState([]);
+  const [optionValueTimeNotNow, setOptionValueTimeNotNow] = useState([]);
+  // const [notNow, setNotNow] = useState(false);
+  const [today, setToday] = useState(null);
+  const [tommorow, setTommorow] = useState(null);
+  const [nextTwoDays, setNextTwoDays] = useState(null);
+  const [hours, setHours] = useState(null);
+  const [minutes, setMinutes] = useState(null);
 
-  getDayFunc = () => {
+  const getDayFunc = () => {
     let today = new Date();
     let nextDay = new Date(today);
     nextDay.setDate(today.getDate() + 1);
@@ -52,73 +43,46 @@ class Header extends React.Component {
     return arrDate;
   };
 
-  handleDelivery = () => {
-    this.setState({
-      delivery: !this.state.delivery,
-    });
-  };
-  handleShipNow = () => {
-    this.setState({
-      delivery: !this.state.delivery,
-      valueTimerOnButton: "",
-      timerFlag: false,
-    });
+  const handleDelivery = () => {
+    setDelivery(!delivery);
   };
 
-  getValueTimer = () => {
-    if (
-      this.state.valueDate !== this.state.today &&
-      this.state.valueTime !== "TRONG 15-30 PHÚT"
-    ) {
-      this.setState({
-        valueTimerOnButton: this.state.valueDate.concat(
-          ` ${this.state.valueTime}`
-        ),
-        timerFlag: true,
-      });
-    } else if (
-      this.state.valueDate === this.state.today &&
-      this.state.valueTime !== "TRONG 15-30 PHÚT"
-    ) {
-      this.setState({
-        valueTimerOnButton: this.state.valueDate.concat(
-          ` ${this.state.valueTime}`
-        ),
-        timerFlag: true,
-      });
+  const handleShipNow = () => {
+    setDelivery(!delivery);
+    setValueTimerOnButton("");
+    setTimerFlag(false);
+  };
+
+  const getValueTimer = () => {
+    if (valueDate !== today && valueTime !== "TRONG 15-30 PHÚT") {
+      setValueTimerOnButton(valueDate.concat(` ${valueTime}`));
+      setTimerFlag(true);
+    } else if (valueDate === today && valueTime !== "TRONG 15-30 PHÚT") {
+      setValueTimerOnButton(valueDate.concat(` ${valueTime}`));
+      setTimerFlag(true);
     } else {
-      this.setState({
-        timerFlag: !this.state.timerFlag,
-        valueTimerOnButton: "",
-      });
+      setTimerFlag(!timerFlag);
+      setValueTimerOnButton("");
     }
   };
 
-  handleTimeOrder = () => {
-    this.setState({
-      timerFlag: true,
-      // delivery: true,
-    });
+  const handleTimeOrder = () => {
+    setTimerFlag(true);
   };
-  getValueTime = (e) => {
-    this.setState({
-      valueTime: e.target.value,
-    });
+
+  const getValueTime = (e) => {
+    setValueTime(e.target.value);
   };
-  getValueDate = (e) => {
-    this.setState({
-      valueDate: e.target.value,
-      valueTime: this.state.optionValueTimeNotNow[0],
-    });
-    if (e.target.value === this.state.today)
-      this.setState({
-        valueTime: this.state.optionValueTime[0],
-      });
+
+  const getValueDate = (e) => {
+    setValueDate(e.target.value);
+    setValueTime(optionValueTimeNotNow[0]);
+    if (e.target.value === today) setValueTime(optionValueTime[0]);
   };
-  getValueInputAddress = (e) => {
-    this.setState({
-      location: e.target.value,
-    });
+
+  const getValueInputAddress = (e) => {
+    setLocation(e.target.value);
+
     fetch(
       `https://api.thecoffeehouse.com/api/v5/map/autocomplete?key=${e.target.value.toLowerCase()}&from=TCH-WEB`,
       {
@@ -148,45 +112,34 @@ class Header extends React.Component {
     )
       .then((res) => res.json())
       .then((loca) => {
-        this.setState({
-          getAddress: loca.addresses,
-        });
+        setGetAddress(loca.addresses);
       });
   };
 
-  fullAddress = (full_address) => {
-    this.setState({
-      location: full_address,
-      dropdown: false,
-    });
+  const fullAddress = (full_address) => {
+    setLocation(full_address);
+    setDropdown(false);
   };
-  onFocusAddress = () => {
-    this.setState({
-      dropdown: true,
-    });
+
+  const onFocusAddress = () => {
+    setDropdown(true);
   };
-  handleClickOutside = (event) => {
-    if (
-      this.container.current &&
-      !this.container.current.contains(event.target)
-    ) {
-      this.setState({
-        dropdown: false,
-        delivery: false,
-      });
+
+  const handleClickOutside = (event) => {
+    if (container.current && !container.current.contains(event.target)) {
+      setDropdown(false);
+      setDelivery(false);
     }
   };
-  componentDidMount() {
-    document.addEventListener("mousedown", this.handleClickOutside);
 
-    let arrDate = this.getDayFunc();
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
 
-    this.setState({
-      today: arrDate[0].toLocaleDateString("en-GB"),
-      tommorow: arrDate[1].toLocaleDateString("en-GB"),
-      nextTwoDays: arrDate[2].toLocaleDateString("en-GB"),
-      valueDate: arrDate[0].toLocaleDateString("en-GB"),
-    });
+    let arrDate = getDayFunc();
+    setToday(arrDate[0].toLocaleDateString("en-GB"));
+    setTommorow(arrDate[1].toLocaleDateString("en-GB"));
+    setNextTwoDays(arrDate[2].toLocaleDateString("en-GB"));
+    setValueDate(arrDate[0].toLocaleDateString("en-GB"));
 
     let now = new Date();
     now.setMinutes(now.getMinutes());
@@ -235,128 +188,106 @@ class Header extends React.Component {
     } else if (minutes > 45 && minutes < 60) arrValueTime.splice(0, 7);
     arrValueTime.pop();
 
-    this.setState({
-      optionValueTime: ["TRONG 15-30 PHÚT", ...arrValueTime],
-      optionValueTimeNotNow: arrValueTimeNotNow,
-      minutes: minutes,
-      hours: hours,
-    });
-  }
-  componentWillUnmount() {
-    document.removeEventListener("mousedown", this.handleClickOutside);
-  }
-  render() {
-    const {
-      getAddress,
-      location,
-      dropdown,
-      delivery,
-      timerFlag,
-      valueTimerOnButton,
-      valueTime,
-      valueDate,
-      optionValueTime,
-      optionValueTimeNotNow,
-      today,
-      tommorow,
-      nextTwoDays,
-      minutes,
-      hours,
-    } = this.state;
-    return (
-      <header className="header">
-        <Link to="/" className="header__logo">
-          <Logo />
-        </Link>
-        {
-          <div className="form-delivery" ref={this.container}>
-            <Button
-              className="btn__delivery"
-              type="button"
-              value={
-                valueTimerOnButton === ""
-                  ? `GIAO NGAY`
-                  : `${valueTimerOnButton}`
-              }
-              onClick={this.handleDelivery}
-            ></Button>
-            <div className="form-control">
-              <span className="input-icon">
-                <Image src={locationImg} alt="Location Image" />
-              </span>
-              <div className="dropdown">
-                <Input
-                  type="text"
-                  className="input-address"
-                  placeholder="Nhập địa chỉ giao hàng"
-                  value={location}
-                  onChange={this.getValueInputAddress}
-                  onFocus={this.onFocusAddress}
-                />
-                <ul className="dropdown-menu">
-                  {dropdown && location.length !== 0
-                    ? getAddress.length > 0
-                      ? getAddress.map((i) => (
-                          <DropdownItem
-                            address={i}
-                            key={i.place_id}
-                            fullAddress={() => this.fullAddress(i.full_address)}
-                          />
-                        ))
-                      : dropdown && (
-                          <li>
-                            <span className="input-icon-dropdown">
-                              <img src={locationImg} alt="" />
-                            </span>
-                            <a href="#a">
-                              <h3 className="dropdown-menu-title">
-                                Không tìm thấy địa chỉ
-                              </h3>
-                              <h3 className="dropdown-menu-title">
-                                "{location}"
-                              </h3>
-                            </a>
-                          </li>
-                        )
-                    : null}
-                </ul>
-              </div>
-            </div>
-            {delivery ? (
-              <DropdownDelivery
-                handleShipNow={this.handleShipNow}
-                getValueTime={this.getValueTime}
-                getValueDate={this.getValueDate}
-                getValueTimer={this.getValueTimer}
-                handleTimeOrder={this.handleTimeOrder}
-                timerFlag={timerFlag}
-                valueDate={valueDate}
-                valueTime={valueTime}
-                optionValueTime={optionValueTime}
-                optionValueTimeNotNow={optionValueTimeNotNow}
-                today={today}
-                tommorow={tommorow}
-                nextTwoDays={nextTwoDays}
-                minutes={minutes}
-                hours={hours}
-                changeDeliveryChargeFlag={this.props.changeDeliveryChargeFlag}
-              />
-            ) : null}
-          </div>
-        }
-        <div className="form-login">
-          <Link to="/LoginAndRegister">
-            <Button className="btn--login" type="button" value="ĐĂNG NHẬP" />
-          </Link>
+    setOptionValueTime(["TRONG 15-30 PHÚT", ...arrValueTime]);
+    setOptionValueTimeNotNow(arrValueTimeNotNow);
+    setMinutes(minutes);
+    setHours(hours);
 
-          {this.props.cartNumber > 0 ? (
-            <div className="cart-icon">
-              <span>{this.props.cartNumber}</span> <CartIcon />
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <header className="header">
+      <Link to="/" className="header__logo">
+        <img src={logo} alt="logo" />
+      </Link>
+      {
+        <div className="form-delivery" ref={container}>
+          <Button
+            className="btn__delivery"
+            type="button"
+            value={
+              valueTimerOnButton === "" ? `GIAO NGAY` : `${valueTimerOnButton}`
+            }
+            onClick={handleDelivery}
+          ></Button>
+          <div className="form-control">
+            <span className="input-icon">
+              <Image src={locationImg} alt="Location Image" />
+            </span>
+            <div className="dropdown">
+              <Input
+                type="text"
+                className="input-address"
+                placeholder="Nhập địa chỉ giao hàng"
+                value={location}
+                onChange={getValueInputAddress}
+                onFocus={onFocusAddress}
+              />
+              <ul className="dropdown-menu">
+                {dropdown && location.length !== 0
+                  ? getAddress.length > 0
+                    ? getAddress.map((i) => (
+                        <DropdownItem
+                          address={i}
+                          key={i.place_id}
+                          fullAddress={() => fullAddress(i.full_address)}
+                        />
+                      ))
+                    : dropdown && (
+                        <li>
+                          <span className="input-icon-dropdown">
+                            <img src={locationImg} alt="" />
+                          </span>
+                          <a href="#a">
+                            <h3 className="dropdown-menu-title">
+                              Không tìm thấy địa chỉ
+                            </h3>
+                            <h3 className="dropdown-menu-title">
+                              "{location}"
+                            </h3>
+                          </a>
+                        </li>
+                      )
+                  : null}
+              </ul>
             </div>
+          </div>
+          {delivery ? (
+            <DropdownDelivery
+              handleShipNow={handleShipNow}
+              getValueTime={getValueTime}
+              getValueDate={getValueDate}
+              getValueTimer={getValueTimer}
+              handleTimeOrder={handleTimeOrder}
+              timerFlag={timerFlag}
+              valueDate={valueDate}
+              valueTime={valueTime}
+              optionValueTime={optionValueTime}
+              optionValueTimeNotNow={optionValueTimeNotNow}
+              today={today}
+              tommorow={tommorow}
+              nextTwoDays={nextTwoDays}
+              minutes={minutes}
+              hours={hours}
+              changeDeliveryChargeFlag={props.changeDeliveryChargeFlag}
+            />
           ) : null}
         </div>
-      </header>
-    );
-  }
+      }
+      <div className="form-login">
+        <Link to="/LoginAndRegister">
+          <Button className="btn--login" type="button" value="ĐĂNG NHẬP" />
+        </Link>
+
+        {props.cartNumber > 0 ? (
+          <div className="cart-icon">
+            <span>{props.cartNumber}</span> <CartIcon />
+          </div>
+        ) : null}
+      </div>
+    </header>
+  );
 }
-export default Header;
