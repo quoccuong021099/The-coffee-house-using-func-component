@@ -17,7 +17,7 @@ export default function LoginAndRegister() {
 
   const handleSubmitPhone = (e) => {
     e.preventDefault();
-    if (!this.state.phoneNumberValue) submitPhoneFlag(true);
+    if (!phoneNumberValue) submitPhoneFlag(true);
   };
 
   const handleClickLogin = () => {

@@ -15,7 +15,6 @@ export default function Body(props) {
   const [categories, setCategories] = useState([]);
   const [searchProduct, setSearchProduct] = useState("");
   const [active, setActive] = useState(null);
-  const [addProductFlag, setAddProductFlag] = useState(false);
   const [productInfo, setProductInfo] = useState(null);
   const [productInfoForCart, setProductInfoForCart] = useState([]);
   const [indexProductOrder, setIndexProductOrder] = useState([-1]);
@@ -76,21 +75,18 @@ export default function Body(props) {
       variants: data.variants,
       price: data.price,
     };
-    setAddProductFlag(true);
     setProductInfo(products);
     setIndexProductOrder(-1);
   };
   /////////////////////
 
   const editProduct = (data, index) => {
-    setAddProductFlag(true);
     setProductInfo(data);
     setIndexProductOrder(index);
   };
   /////////////////////
 
   const closeModal = () => {
-    setAddProductFlag(false);
     setTimeout(() => {
       setProductInfo(null);
     }, 300);

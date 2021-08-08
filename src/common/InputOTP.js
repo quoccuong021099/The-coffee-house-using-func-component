@@ -28,7 +28,7 @@ export default function InputOTP(props) {
         {(props.submitPhoneFlag || props.phoneNumberValue === "") && (
           <span className="error">Không được để trống trường này</span>
         )}
-        <Button className="btn-otp" type="button" value={this.props.value} />
+        <Button className="btn-otp" type="button" value={props.value} />
       </form>
     </div>
   );
